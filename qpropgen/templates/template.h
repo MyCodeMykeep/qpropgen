@@ -54,12 +54,10 @@ signals:
 {% endfor %}
 
 protected:
-{% for property in properties %}
-    {# Create a protected setter for readonly properties #}
-    {%- if property.mutability == 'readonly' %}
-    {{ property.declaration_prefix }} void {{property.setterName }}({{ property.argType }} value) {{- property.declaration_suffix }};
-    {%- endif %}
-{% endfor %}
+{%- for property in properties if property.mutability == 'readonly' %}
+    {{ property.declaration_prefix }} void {{ property.setterName }}({{ property.argType }} value) {{- property.declaration_suffix }};
+{%- endfor %}
+
 
 {%- for group in properties|groupby('access') %}
 {{ group.grouper }}:
