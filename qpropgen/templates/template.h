@@ -6,7 +6,7 @@
 #include <QObject>
 
 {%- for include in includes %}
-#include <{{include}}>
+#include {{include}}
 {%- endfor %}
 
 class {{ className }} : public {{ baseClassName }} {
@@ -23,9 +23,24 @@ class {{ className }} : public {{ baseClassName }} {
     {%- endif %}
     )
 {% endfor %}
+
 public:
+    // 单例访问接口
+    static {{ className }}* instance() {
+        static {{ className }} _instance;
+        return &_instance;
+    }
+
+    // 禁止拷贝和移动
+    {{ className }}(const {{ className }}&) = delete;
+    {{ className }}& operator=(const {{ className }}&) = delete;
+    {{ className }}({{ className }}&&) = delete;
+    {{ className }}& operator=({{ className }}&&) = delete;
+
+private:
     explicit {{ className }}(QObject* parent = nullptr);
 
+public:
 {% for property in properties %}
     {{ property.declaration_prefix }} {{ property.type }} {{ property.name }}() const {{- property.declaration_suffix }};
     {%- if property.mutability == 'readwrite' %}
